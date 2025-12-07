@@ -41,24 +41,32 @@ impl TursoStorage {
             }
         };
 
+        eprintln!("DEBUG: Starting sync...");
         // Best-effort sync on startup for embedded replicas.
         // We ignore errors to allow offline usage (using local cache).
         if let Err(e) = db.sync().await {
             eprintln!("Taskwarrior Turso Sync Warning: Failed to sync on startup: {}", e);
+        } else {
+             eprintln!("DEBUG: Sync completed successfully.");
         }
 
+        eprintln!("DEBUG: Connecting to database...");
         let conn = db.connect()?;
+        eprintln!("DEBUG: Connected. Creating storage struct...");
         let storage = Self {
             db: Arc::new(db),
             conn: Arc::new(conn),
         };
 
+        eprintln!("DEBUG: Initializing storage schema...");
         storage.initialize().await?;
+        eprintln!("DEBUG: Storage initialized.");
 
         Ok(storage)
     }
 
     async fn initialize(&self) -> Result<()> {
+        eprintln!("DEBUG: Creating tables if not exist...");
         self.conn
             .execute(
                 "CREATE TABLE IF NOT EXISTS operations (
