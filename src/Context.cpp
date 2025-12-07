@@ -682,7 +682,27 @@ int Context::initialize(int argc, const char** argv) {
     // itself is read-write.
     bool read_write =
         (config.getBoolean("gc") && (c->needs_gc() || c->needs_recur_update())) || !c->read_only();
-    tdb2.open_replica(data_dir, create_if_missing, read_write);
+
+    if (config.get("turso.url") != "") {
+      std::string url = config.get("turso.url");
+      std::string token = config.get("turso.token");
+      std::string file = config.get("turso.file");
+
+      std::string config_json;
+      if (file != "") {
+        // Expand tilde in path
+        file = File(file)._data;
+        // EmbeddedReplica
+        config_json = "{\"EmbeddedReplica\":{\"path\":\"" + file + "\",\"url\":\"" + url +
+                      "\",\"token\":\"" + token + "\"}}";
+      } else {
+        // Remote
+        config_json = "{\"Remote\":{\"url\":\"" + url + "\",\"token\":\"" + token + "\"}}";
+      }
+      tdb2.open_replica_turso(config_json);
+    } else {
+      tdb2.open_replica(data_dir, create_if_missing, read_write);
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     //

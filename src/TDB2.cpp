@@ -468,3 +468,6 @@ static void dependency_scan(std::vector<Task>& tasks) {
 
 ////////////////////////////////////////////////////////////////////////////////
 // vim: ts=2 et sw=2
+void TDB2::open_replica_turso(const std::string& config_json) {
+  _replica = tc::new_replica_with_turso(config_json);
+}

@@ -3,6 +3,9 @@ use std::path::PathBuf;
 use std::pin::Pin;
 use taskchampion as tc;
 
+mod turso;
+
+
 // All Taskchampion FFI is contained in this module, due to issues with cxx and multiple modules
 // such as https://github.com/dtolnay/cxx/issues/1323.
 
@@ -16,6 +19,14 @@ use taskchampion as tc;
 /// This interface is an internal implementation detail of Taskwarrior and may change at any time.
 #[cxx::bridge(namespace = "tc")]
 mod ffi {
+    // --- Turso
+    extern "Rust" {
+        /// Create a new replica stored in Turso.
+        ///
+        /// `config_json` should be a JSON string matching `TursoConfig`.
+        fn new_replica_with_turso(config_json: String) -> Result<Box<Replica>>;
+    }
+
     // --- Uuid
 
     #[derive(Debug, Eq, PartialEq, Clone, Copy)]
@@ -509,6 +520,25 @@ fn new_replica_on_disk(
 fn new_replica_in_memory() -> Result<Box<Replica>, CppError> {
     let storage = tc::StorageConfig::InMemory.into_storage()?;
     Ok(Box::new(tc::Replica::new(storage).into()))
+}
+
+fn new_replica_with_turso(config_json: String) -> Result<Box<Replica>, CppError> {
+    let config: turso::TursoConfig = serde_json::from_str(&config_json)
+        .map_err(|e| tc::Error::Database(format!("Invalid config: {}", e)))?;
+    
+    // We need to block here because the C++ side expects a synchronous result return,
+    // and we are creating the storage async.
+    // However, creating the storage might involve network IO.
+    let runtime = tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .build()
+        .map_err(|e| tc::Error::Database(format!("Failed to create runtime: {}", e)))?;
+        
+    let storage = runtime.block_on(async {
+        turso::TursoStorage::new(config).await
+    }).map_err(|e| tc::Error::Database(e.to_string()))?;
+
+    Ok(Box::new(tc::Replica::new(Box::new(storage)).into()))
 }
 
 /// Utility function for Replica methods using Operations.

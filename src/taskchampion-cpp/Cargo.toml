@@ -11,6 +11,11 @@ crate-type = ["staticlib"]
 [dependencies]
 taskchampion = "=2.0.2"
 cxx = "1.0.133"
+libsql = { version = "0.9.29", features = ["serde"] }
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.145"
+anyhow = "1.0.100"
+tokio = { version = "1.48.0", features = ["rt"] }
 
 [features]
 # use native CA roots, instead of bundled
@@ -18,3 +23,6 @@ tls-native-roots = ["taskchampion/tls-native-roots"]
 
 [build-dependencies]
 cxx-build = "1.0.133"
+
+[dev-dependencies]
+tempfile = "3.23.0"
