@@ -23,39 +23,53 @@ pub enum TursoConfig {
 }
 
 pub struct TursoStorage {
+    // Primary DB for query/execute (Local for EmbeddedReplica)
     db: Arc<libsql::Database>,
+    // Optional DB for syncing (only for EmbeddedReplica)
+    sync_db: Option<Arc<libsql::Database>>,
     conn: Arc<libsql::Connection>,
     runtime: Arc<tokio::runtime::Runtime>,
 }
 
 impl TursoStorage {
     pub async fn new(config: TursoConfig, runtime: Arc<tokio::runtime::Runtime>) -> Result<Self> {
-        let db = match config {
-            TursoConfig::Local { path } => Builder::new_local(path).build().await?,
+        let (db, sync_db) = match config {
+            TursoConfig::Local { path } => {
+                let db = Builder::new_local(path).build().await?;
+                (Arc::new(db), None)
+            }
             TursoConfig::Remote { url, token } => {
-                Builder::new_remote(url, token).build().await?
+                let db = Builder::new_remote(url, token).build().await?;
+                (Arc::new(db), None)
             }
             TursoConfig::EmbeddedReplica { path, url, token } => {
-                Builder::new_remote_replica(path, url, token)
+                let sync_db = Builder::new_remote_replica(path.clone(), url, token)
                     .build()
-                    .await?
+                    .await?;
+                
+                eprintln!("DEBUG: Starting sync on replica...");
+                if let Err(e) = sync_db.sync().await {
+                    eprintln!("Taskwarrior Turso Sync Warning: Failed to sync on startup: {}", e);
+                } else {
+                    eprintln!("DEBUG: Sync completed successfully.");
+                }
+
+                // Open the file as a LOCAL database for the application to use.
+                // This bypasses any potential read-issues with the replica connection.
+                let db = Builder::new_local(path).build().await?;
+                (Arc::new(db), Some(Arc::new(sync_db)))
             }
         };
 
-        eprintln!("DEBUG: Starting sync...");
-        // Best-effort sync on startup for embedded replicas.
-        // We ignore errors to allow offline usage (using local cache).
-        if let Err(e) = db.sync().await {
-            eprintln!("Taskwarrior Turso Sync Warning: Failed to sync on startup: {}", e);
-        } else {
-             eprintln!("DEBUG: Sync completed successfully.");
-        }
-
-        eprintln!("DEBUG: Connecting to database...");
+        eprintln!("DEBUG: Connecting to database (local mode if replica)...");
         let conn = db.connect()?;
         eprintln!("DEBUG: Connected. Creating storage struct...");
+        
+        // Remove Previous Sync Block logic from here as it is moved above
+        
         let storage = Self {
-            db: Arc::new(db),
+            db,
+            sync_db,
             conn: Arc::new(conn),
             runtime,
         };
