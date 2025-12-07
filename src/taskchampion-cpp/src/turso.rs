@@ -43,7 +43,9 @@ impl TursoStorage {
 
         // Best-effort sync on startup for embedded replicas.
         // We ignore errors to allow offline usage (using local cache).
-        let _ = db.sync().await;
+        if let Err(e) = db.sync().await {
+            eprintln!("Taskwarrior Turso Sync Warning: Failed to sync on startup: {}", e);
+        }
 
         let conn = db.connect()?;
         let storage = Self {
