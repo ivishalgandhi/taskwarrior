@@ -23,53 +23,40 @@ pub enum TursoConfig {
 }
 
 pub struct TursoStorage {
-    // Primary DB for query/execute (Local for EmbeddedReplica)
     db: Arc<libsql::Database>,
-    // Optional DB for syncing (only for EmbeddedReplica)
-    sync_db: Option<Arc<libsql::Database>>,
     conn: Arc<libsql::Connection>,
     runtime: Arc<tokio::runtime::Runtime>,
 }
 
 impl TursoStorage {
     pub async fn new(config: TursoConfig, runtime: Arc<tokio::runtime::Runtime>) -> Result<Self> {
-        let (db, sync_db) = match config {
+        let db = match config {
             TursoConfig::Local { path } => {
-                let db = Builder::new_local(path).build().await?;
-                (Arc::new(db), None)
+                Builder::new_local(path).build().await?
             }
             TursoConfig::Remote { url, token } => {
-                let db = Builder::new_remote(url, token).build().await?;
-                (Arc::new(db), None)
+                Builder::new_remote(url, token).build().await?
             }
             TursoConfig::EmbeddedReplica { path, url, token } => {
-                let sync_db = Builder::new_remote_replica(path.clone(), url, token)
+                Builder::new_remote_replica(path, url, token)
                     .build()
-                    .await?;
-                
-                eprintln!("DEBUG: Starting sync on replica...");
-                if let Err(e) = sync_db.sync().await {
-                    eprintln!("Taskwarrior Turso Sync Warning: Failed to sync on startup: {}", e);
-                } else {
-                    eprintln!("DEBUG: Sync completed successfully.");
-                }
-
-                // Open the file as a LOCAL database for the application to use.
-                // This bypasses any potential read-issues with the replica connection.
-                let db = Builder::new_local(path).build().await?;
-                (Arc::new(db), Some(Arc::new(sync_db)))
+                    .await?
             }
         };
 
-        eprintln!("DEBUG: Connecting to database (local mode if replica)...");
+        eprintln!("DEBUG: Starting sync...");
+        if let Err(e) = db.sync().await {
+            eprintln!("Taskwarrior Turso Sync Warning: Failed to sync on startup: {}", e);
+        } else {
+            eprintln!("DEBUG: Sync completed successfully.");
+        }
+
+        eprintln!("DEBUG: Connecting to database...");
         let conn = db.connect()?;
         eprintln!("DEBUG: Connected. Creating storage struct...");
         
-        // Remove Previous Sync Block logic from here as it is moved above
-        
         let storage = Self {
-            db,
-            sync_db,
+            db: Arc::new(db),
             conn: Arc::new(conn),
             runtime,
         };
@@ -132,12 +119,12 @@ impl TursoStorage {
 impl Storage for TursoStorage {
     fn txn<'a>(&'a mut self) -> Result<Box<dyn StorageTxn + 'a>, taskchampion::Error> {
         let runtime = self.runtime.clone();
-        let sync_db = self.sync_db.clone();
+        let db = self.db.clone();
 
         Ok(Box::new(TursoTxn {
             conn: self.conn.clone(),
             runtime,
-            sync_db,
+            db,
         }))
     }
 }
@@ -145,7 +132,7 @@ impl Storage for TursoStorage {
 struct TursoTxn {
     conn: Arc<libsql::Connection>,
     runtime: Arc<tokio::runtime::Runtime>,
-    sync_db: Option<Arc<libsql::Database>>,
+    db: Arc<libsql::Database>,
 }
 
 impl StorageTxn for TursoTxn {
@@ -309,18 +296,16 @@ impl StorageTxn for TursoTxn {
     }
 
     fn commit(&mut self) -> Result<(), taskchampion::Error> {
-        // If we have a sync_db (embedded replica mode), sync changes to remote
-        if let Some(ref sync_db) = self.sync_db {
-            eprintln!("DEBUG: Syncing changes to Turso...");
-            self.runtime.block_on(async {
-                if let Err(e) = sync_db.sync().await {
-                    eprintln!("Taskwarrior Turso Sync Warning: Failed to sync after commit: {}", e);
-                    // Don't fail the commit if sync fails (allow offline operation)
-                } else {
-                    eprintln!("DEBUG: Sync to Turso completed successfully.");
-                }
-            });
-        }
+        // Sync changes to remote after commit
+        eprintln!("DEBUG: Syncing changes to Turso...");
+        self.runtime.block_on(async {
+            if let Err(e) = self.db.sync().await {
+                eprintln!("Taskwarrior Turso Sync Warning: Failed to sync after commit: {}", e);
+                // Don't fail the commit if sync fails (allow offline operation)
+            } else {
+                eprintln!("DEBUG: Sync to Turso completed successfully.");
+            }
+        });
         Ok(())
     }
 
