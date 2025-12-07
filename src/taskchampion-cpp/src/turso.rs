@@ -26,50 +26,44 @@ pub struct TursoStorage {
     db: Arc<libsql::Database>,
     conn: Arc<libsql::Connection>,
     runtime: Arc<tokio::runtime::Runtime>,
+    should_sync: bool,  // Track if this DB supports sync
 }
 
 impl TursoStorage {
     pub async fn new(config: TursoConfig, runtime: Arc<tokio::runtime::Runtime>) -> Result<Self> {
-        let db = match config {
+        let (db, should_sync) = match config {
             TursoConfig::Local { path } => {
-                Builder::new_local(path).build().await?
+                (Builder::new_local(path).build().await?, false)
             }
             TursoConfig::Remote { url, token } => {
-                Builder::new_remote(url, token).build().await?
+                (Builder::new_remote(url, token).build().await?, false)
             }
             TursoConfig::EmbeddedReplica { path, url, token } => {
-                Builder::new_remote_replica(path, url, token)
-                    .build()
-                    .await?
+                (Builder::new_remote_replica(path, url, token).build().await?, true)
             }
         };
 
-        eprintln!("DEBUG: Starting sync...");
-        if let Err(e) = db.sync().await {
-            eprintln!("Taskwarrior Turso Sync Warning: Failed to sync on startup: {}", e);
-        } else {
-            eprintln!("DEBUG: Sync completed successfully.");
+        // Only sync for EmbeddedReplica mode
+        if should_sync {
+            if let Err(e) = db.sync().await {
+                eprintln!("Taskwarrior Turso Sync Warning: Failed to sync on startup: {}", e);
+            }
         }
 
-        eprintln!("DEBUG: Connecting to database...");
         let conn = db.connect()?;
-        eprintln!("DEBUG: Connected. Creating storage struct...");
         
         let storage = Self {
             db: Arc::new(db),
             conn: Arc::new(conn),
             runtime,
+            should_sync,
         };
 
-        eprintln!("DEBUG: Initializing storage schema...");
         storage.initialize().await?;
-        eprintln!("DEBUG: Storage initialized.");
-
         Ok(storage)
     }
 
     async fn initialize(&self) -> Result<()> {
-        eprintln!("DEBUG: Creating tables if not exist...");
         self.conn
             .execute(
                 "CREATE TABLE IF NOT EXISTS operations (
@@ -120,11 +114,13 @@ impl Storage for TursoStorage {
     fn txn<'a>(&'a mut self) -> Result<Box<dyn StorageTxn + 'a>, taskchampion::Error> {
         let runtime = self.runtime.clone();
         let db = self.db.clone();
+        let should_sync = self.should_sync;
 
         Ok(Box::new(TursoTxn {
             conn: self.conn.clone(),
             runtime,
             db,
+            should_sync,
         }))
     }
 }
@@ -133,6 +129,7 @@ struct TursoTxn {
     conn: Arc<libsql::Connection>,
     runtime: Arc<tokio::runtime::Runtime>,
     db: Arc<libsql::Database>,
+    should_sync: bool,
 }
 
 impl StorageTxn for TursoTxn {
@@ -296,16 +293,14 @@ impl StorageTxn for TursoTxn {
     }
 
     fn commit(&mut self) -> Result<(), taskchampion::Error> {
-        // Sync changes to remote after commit
-        eprintln!("DEBUG: Syncing changes to Turso...");
-        self.runtime.block_on(async {
-            if let Err(e) = self.db.sync().await {
-                eprintln!("Taskwarrior Turso Sync Warning: Failed to sync after commit: {}", e);
-                // Don't fail the commit if sync fails (allow offline operation)
-            } else {
-                eprintln!("DEBUG: Sync to Turso completed successfully.");
-            }
-        });
+        // Only sync for EmbeddedReplica mode
+        if self.should_sync {
+            self.runtime.block_on(async {
+                if let Err(e) = self.db.sync().await {
+                    eprintln!("Taskwarrior Turso Sync Warning: Failed to sync after commit: {}", e);
+                }
+            });
+        }
         Ok(())
     }
 
