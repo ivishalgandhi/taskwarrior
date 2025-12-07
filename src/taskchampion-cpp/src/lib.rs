@@ -529,13 +529,13 @@ fn new_replica_with_turso(config_json: String) -> Result<Box<Replica>, CppError>
     // We need to block here because the C++ side expects a synchronous result return,
     // and we are creating the storage async.
     // However, creating the storage might involve network IO.
-    let runtime = tokio::runtime::Builder::new_multi_thread()
+    let runtime = std::sync::Arc::new(tokio::runtime::Builder::new_multi_thread()
         .enable_all()
         .build()
-        .map_err(|e| tc::Error::Database(format!("Failed to create runtime: {}", e)))?;
+        .map_err(|e| tc::Error::Database(format!("Failed to create runtime: {}", e)))?);
         
     let storage = runtime.block_on(async {
-        turso::TursoStorage::new(config).await
+        turso::TursoStorage::new(config, runtime.clone()).await
     }).map_err(|e| tc::Error::Database(e.to_string()))?;
 
     Ok(Box::new(tc::Replica::new(Box::new(storage)).into()))

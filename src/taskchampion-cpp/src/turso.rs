@@ -25,10 +25,11 @@ pub enum TursoConfig {
 pub struct TursoStorage {
     db: Arc<libsql::Database>,
     conn: Arc<libsql::Connection>,
+    runtime: Arc<tokio::runtime::Runtime>,
 }
 
 impl TursoStorage {
-    pub async fn new(config: TursoConfig) -> Result<Self> {
+    pub async fn new(config: TursoConfig, runtime: Arc<tokio::runtime::Runtime>) -> Result<Self> {
         let db = match config {
             TursoConfig::Local { path } => Builder::new_local(path).build().await?,
             TursoConfig::Remote { url, token } => {
@@ -56,6 +57,7 @@ impl TursoStorage {
         let storage = Self {
             db: Arc::new(db),
             conn: Arc::new(conn),
+            runtime,
         };
 
         eprintln!("DEBUG: Initializing storage schema...");
@@ -115,26 +117,7 @@ impl TursoStorage {
 
 impl Storage for TursoStorage {
     fn txn<'a>(&'a mut self) -> Result<Box<dyn StorageTxn + 'a>, taskchampion::Error> {
-        // In a real implementation, we might want to start a transaction here.
-        // For now, Turso/libsql interactions in the `StorageTxn` will be auto-commit or managed there.
-        // But `StorageTxn` contract assumes exclusive access or transaction isolation usually.
-        // Libsql client assumes async, but passing it into the sync `txn` method requires blocking or handling async in sync context.
-        // TaskChampion's `Storage` trait is synchronous. This is a challenge because libsql is async.
-        // We will misuse `tokio::task::block_in_place` or `tokio::runtime::Handle` if we are in an async runtime,
-        // or create a runtime if we are not.
-        //
-        // However, standard `taskwarrior` is synchronous. 
-        // We might need to use `libsql` blocking API if available or wrap async calls.
-        
-        // Actually, `libsql` has a blocking API behind a feature flag or via `Connection`.
-        // The dependency we added `libsql` features `core` `hrana` etc.
-        // Let's assume we are running in an environment where we can block.
-        // Since `Storage::txn` is sync, we need a way to execute async code.
-        
-        let runtime = tokio::runtime::Builder::new_multi_thread()
-            .enable_all()
-            .build()
-            .map_err(|e| taskchampion::Error::Database(format!("Failed to create runtime: {}", e)))?;
+        let runtime = self.runtime.clone();
 
         Ok(Box::new(TursoTxn {
             conn: self.conn.clone(),
@@ -145,7 +128,7 @@ impl Storage for TursoStorage {
 
 struct TursoTxn {
     conn: Arc<libsql::Connection>,
-    runtime: tokio::runtime::Runtime,
+    runtime: Arc<tokio::runtime::Runtime>,
 }
 
 impl StorageTxn for TursoTxn {
