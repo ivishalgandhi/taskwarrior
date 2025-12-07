@@ -132,10 +132,12 @@ impl TursoStorage {
 impl Storage for TursoStorage {
     fn txn<'a>(&'a mut self) -> Result<Box<dyn StorageTxn + 'a>, taskchampion::Error> {
         let runtime = self.runtime.clone();
+        let sync_db = self.sync_db.clone();
 
         Ok(Box::new(TursoTxn {
             conn: self.conn.clone(),
             runtime,
+            sync_db,
         }))
     }
 }
@@ -143,6 +145,7 @@ impl Storage for TursoStorage {
 struct TursoTxn {
     conn: Arc<libsql::Connection>,
     runtime: Arc<tokio::runtime::Runtime>,
+    sync_db: Option<Arc<libsql::Database>>,
 }
 
 impl StorageTxn for TursoTxn {
@@ -306,8 +309,18 @@ impl StorageTxn for TursoTxn {
     }
 
     fn commit(&mut self) -> Result<(), taskchampion::Error> {
-        // We are using auto-commit for now with one-off statements.
-        // If we wrapped this in a real transaction, we would commit here.
+        // If we have a sync_db (embedded replica mode), sync changes to remote
+        if let Some(ref sync_db) = self.sync_db {
+            eprintln!("DEBUG: Syncing changes to Turso...");
+            self.runtime.block_on(async {
+                if let Err(e) = sync_db.sync().await {
+                    eprintln!("Taskwarrior Turso Sync Warning: Failed to sync after commit: {}", e);
+                    // Don't fail the commit if sync fails (allow offline operation)
+                } else {
+                    eprintln!("DEBUG: Sync to Turso completed successfully.");
+                }
+            });
+        }
         Ok(())
     }
 
