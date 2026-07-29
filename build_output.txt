@@ -1,0 +1,334 @@
+    Checking libc v0.2.178
+    Checking serde_core v1.0.228
+    Checking memchr v2.7.4
+    Checking futures-channel v0.3.31
+    Checking futures-io v0.3.31
+    Checking tracing v0.1.41
+    Checking aws-lc-sys v0.27.0
+    Checking zerocopy v0.7.35
+    Checking zerocopy v0.8.23
+   Compiling errno v0.3.10
+   Compiling bitflags v2.9.0
+    Checking futures-util v0.3.31
+   Compiling cfg-if v1.0.0
+   Compiling libloading v0.8.6
+    Checking parking_lot_core v0.9.10
+    Checking socket2 v0.6.0
+    Checking signal-hook-registry v1.4.2
+    Checking getrandom v0.2.15
+    Checking parking_lot v0.12.3
+    Checking mio v1.0.3
+    Checking socket2 v0.5.8
+    Checking ring v0.17.14
+    Checking rand_core v0.6.4
+    Checking aws-lc-rs v1.12.6
+    Checking security-framework-sys v2.14.0
+    Checking core-foundation v0.10.0
+    Checking cpufeatures v0.2.17
+    Checking core-foundation v0.9.4
+    Checking crypto-bigint v0.4.9
+    Checking security-framework v3.2.0
+    Checking security-framework v2.11.1
+    Checking ff v0.12.1
+    Checking sha2 v0.10.8
+    Checking rfc6979 v0.3.1
+    Checking group v0.12.1
+    Checking signature v1.6.4
+    Checking getrandom v0.3.1
+    Checking elliptic-curve v0.12.3
+    Checking rustls-webpki v0.102.8
+    Checking rustls-webpki v0.101.7
+    Checking serde v1.0.228
+    Checking sct v0.7.1
+    Checking rustls-native-certs v0.8.1
+    Checking ppv-lite86 v0.2.21
+    Checking ahash v0.8.11
+    Checking ecdsa v0.14.8
+    Checking rustls-native-certs v0.6.3
+   Compiling rustix v0.38.44
+    Checking rustls v0.21.12
+   Compiling home v0.5.11
+    Checking rustls v0.23.23
+    Checking hashbrown v0.14.5
+    Checking rand_chacha v0.3.1
+    Checking bytes v1.10.1
+    Checking deranged v0.3.11
+    Checking uuid v1.15.1
+    Checking p256 v0.11.1
+    Checking serde_json v1.0.145
+    Checking crypto-bigint v0.5.5
+    Checking tokio v1.48.0
+    Checking http v0.2.12
+    Checking http v1.3.1
+    Checking time v0.3.39
+    Checking bytes-utils v0.1.4
+    Checking http-body v0.4.6
+    Checking http-body v1.0.1
+   Compiling which v4.4.2
+    Checking http-body-util v0.1.3
+   Compiling clang-sys v1.8.1
+   Compiling log v0.4.26
+    Checking hashbrown v0.12.3
+    Checking pin-project v1.1.10
+    Checking rand v0.8.5
+   Compiling uncased v0.9.10
+   Compiling anyhow v1.0.100
+   Compiling siphasher v1.0.1
+   Compiling prost-derive v0.12.6
+   Compiling phf_shared v0.11.3
+    Checking indexmap v1.9.3
+    Checking serde_urlencoded v0.7.1
+    Checking block-padding v0.3.3
+    Checking axum-core v0.3.4
+    Checking inout v0.1.4
+   Compiling phf_generator v0.11.3
+    Checking bitflags v1.3.2
+    Checking matchit v0.7.3
+    Checking sync_wrapper v0.1.2
+   Compiling phf_codegen v0.11.3
+    Checking cipher v0.4.4
+    Checking simple_asn1 v0.6.3
+    Checking hashlink v0.8.4
+    Checking aho-corasick v1.1.3
+    Checking fallible-iterator v0.2.0
+    Checking jsonwebtoken v9.3.1
+   Compiling libsql-sqlite3-parser v0.13.0
+    Checking rustls v0.22.4
+   Compiling bindgen v0.66.1
+    Checking regex-automata v0.4.9
+    Checking sha1 v0.10.6
+    Checking prost v0.12.6
+    Checking http-range-header v0.3.1
+    Checking chrono v0.4.40
+    Checking libsqlite3-sys v0.30.1
+    Checking tokio-util v0.7.13
+    Checking aws-smithy-async v1.2.5
+    Checking tokio-rustls v0.26.2
+    Checking h2 v0.3.26
+    Checking aws-smithy-types v1.3.0
+    Checking h2 v0.4.8
+    Checking tower v0.5.2
+    Checking tokio-rustls v0.24.1
+    Checking tower v0.4.13
+    Checking tokio-io-timeout v1.2.1
+    Checking tokio-stream v0.1.17
+    Checking regex v1.11.1
+    Checking tokio-rustls v0.25.0
+    Checking aws-smithy-runtime-api v1.7.4
+    Checking aws-smithy-eventstream v0.60.8
+    Checking aws-smithy-json v0.61.3
+    Checking aws-smithy-query v0.60.7
+    Checking phf v0.11.3
+    Checking aes v0.8.4
+    Checking cbc v0.1.2
+    Checking futures-executor v0.3.31
+    Checking hashlink v0.9.1
+    Checking rustls-native-certs v0.7.3
+    Checking futures v0.3.31
+    Checking ureq v2.12.1
+    Checking rusqlite v0.32.1
+    Checking tower-http v0.4.4
+    Checking aws-smithy-http v0.62.0
+    Checking aws-credential-types v1.2.2
+    Checking aws-types v1.3.6
+    Checking aws-sigv4 v1.3.0
+    Checking aws-smithy-checksums v0.63.1
+    Checking libsql-hrana v0.9.29
+    Checking link-cplusplus v1.0.10
+    Checking bincode v1.3.3
+    Checking cxx v1.0.144
+   Compiling libsql-ffi v0.9.29
+    Checking hyper v0.14.32
+    Checking hyper v1.6.0
+    Checking hyper-util v0.1.10
+    Checking hyper-rustls v0.27.5
+    Checking reqwest v0.12.14
+    Checking google-cloud-metadata v0.5.1
+    Checking reqwest-middleware v0.4.1
+    Checking google-cloud-auth v0.17.2
+    Checking hyper-rustls v0.24.2
+    Checking axum v0.6.20
+    Checking hyper-timeout v0.4.1
+    Checking hyper-rustls v0.25.0
+    Checking aws-smithy-http-client v1.0.0
+    Checking aws-smithy-runtime v1.8.0
+    Checking google-cloud-storage v0.23.0
+    Checking libsql-rusqlite v0.9.29
+    Checking libsql-sys v0.9.29
+    Checking aws-runtime v1.5.6
+    Checking tonic v0.11.0
+    Checking aws-sdk-sts v1.63.0
+    Checking aws-sdk-sso v1.62.0
+    Checking aws-sdk-ssooidc v1.63.0
+    Checking aws-sdk-s3 v1.79.0
+    Checking tonic-web v0.11.0
+    Checking libsql_replication v0.9.29
+    Checking aws-config v1.6.0
+    Checking libsql v0.9.29
+    Checking taskchampion v2.0.2
+    Checking taskchampion-lib v0.1.0 (/Users/vishal/src/taskwarrior/src/taskchampion-cpp)
+warning: unused import: `Context`
+ --> src/taskchampion-cpp/src/turso.rs:1:14
+  |
+1 | use anyhow::{Context, Result};
+  |              ^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused imports: `Deserialize` and `Serialize`
+ --> src/taskchampion-cpp/src/turso.rs:3:13
+  |
+3 | use serde::{Deserialize, Serialize};
+  |             ^^^^^^^^^^^  ^^^^^^^^^
+
+error[E0046]: not all trait items implemented, missing: `get_task`, `get_pending_tasks`, `create_task`, `set_task`, `delete_task`, `all_tasks`, `all_task_uuids`, `base_version`, `set_base_version`, `get_task_operations`, `unsynced_operations`
+   --> src/taskchampion-cpp/src/turso.rs:118:1
+    |
+118 | impl StorageTxn for TursoTxn {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ missing `get_task`, `get_pending_tasks`, `create_task`, `set_task`, `delete_task`, `all_tasks`, `all_task_uuids`, `base_version`, `set_base_version`, `get_task_operations`, `unsynced_operations` in implementation
+    |
+    = help: implement the missing item: `fn get_task(&mut self, _: taskchampion::Uuid) -> std::result::Result<std::option::Option<HashMap<std::string::String, std::string::String>>, taskchampion::Error> { todo!() }`
+    = help: implement the missing item: `fn get_pending_tasks(&mut self) -> std::result::Result<std::vec::Vec<(taskchampion::Uuid, HashMap<std::string::String, std::string::String>)>, taskchampion::Error> { todo!() }`
+    = help: implement the missing item: `fn create_task(&mut self, _: taskchampion::Uuid) -> std::result::Result<bool, taskchampion::Error> { todo!() }`
+    = help: implement the missing item: `fn set_task(&mut self, _: taskchampion::Uuid, _: HashMap<std::string::String, std::string::String>) -> std::result::Result<(), taskchampion::Error> { todo!() }`
+    = help: implement the missing item: `fn delete_task(&mut self, _: taskchampion::Uuid) -> std::result::Result<bool, taskchampion::Error> { todo!() }`
+    = help: implement the missing item: `fn all_tasks(&mut self) -> std::result::Result<std::vec::Vec<(taskchampion::Uuid, HashMap<std::string::String, std::string::String>)>, taskchampion::Error> { todo!() }`
+    = help: implement the missing item: `fn all_task_uuids(&mut self) -> std::result::Result<std::vec::Vec<taskchampion::Uuid>, taskchampion::Error> { todo!() }`
+    = help: implement the missing item: `fn base_version(&mut self) -> std::result::Result<taskchampion::Uuid, taskchampion::Error> { todo!() }`
+    = help: implement the missing item: `fn set_base_version(&mut self, _: taskchampion::Uuid) -> std::result::Result<(), taskchampion::Error> { todo!() }`
+    = help: implement the missing item: `fn get_task_operations(&mut self, _: taskchampion::Uuid) -> std::result::Result<std::vec::Vec<ReplicaOp>, taskchampion::Error> { todo!() }`
+    = help: implement the missing item: `fn unsynced_operations(&mut self) -> std::result::Result<std::vec::Vec<ReplicaOp>, taskchampion::Error> { todo!() }`
+
+error[E0599]: no method named `embedded_replica` found for struct `libsql::Builder<T>` in the current scope
+  --> src/taskchampion-cpp/src/turso.rs:38:22
+   |
+37 | /                 Builder::new_local(path)
+38 | |                     .embedded_replica(url, token)
+   | |                     -^^^^^^^^^^^^^^^^ method not found in `libsql::Builder<libsql::database::builder::Local>`
+   | |_____________________|
+   |
+
+error[E0277]: the trait bound `(i64,): IntoParams` is not satisfied
+   --> src/taskchampion-cpp/src/turso.rs:263:22
+    |
+261 |                  self.conn.execute(
+    |                            ------- required by a bound introduced by this call
+262 |                      "DELETE FROM working_set WHERE id = ?",
+263 |                      (index as i64,)
+    |                      ^^^^^^^^^^^^^^^ the trait `IntoParams` is not implemented for `(i64,)`
+    |
+    = help: the following other types implement trait `IntoParams`:
+              ((&str, A), (&str, B))
+              ((&str, A), (&str, B), (&str, C))
+              ((&str, A), (&str, B), (&str, C), (&str, D))
+              ((&str, A), (&str, B), (&str, C), (&str, D), (&str, E))
+              ((&str, A), (&str, B), (&str, C), (&str, D), (&str, E), (&str, F))
+              ((&str, A), (&str, B), (&str, C), (&str, D), (&str, E), (&str, F), (&str, G))
+              ((&str, A), (&str, B), (&str, C), (&str, D), (&str, E), (&str, F), (&str, G), (&str, H))
+              ((&str, A), (&str, B), (&str, C), (&str, D), ..., ..., ..., ..., ...)
+            and 23 others
+note: required by a bound in `Connection::execute`
+   --> /Users/vishal/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libsql-0.9.29/src/connection.rs:152:57
+    |
+152 |     pub async fn execute(&self, sql: &str, params: impl IntoParams) -> Result<u64> {
+    |                                                         ^^^^^^^^^^ required by this bound in `Connection::execute`
+    = note: the full name for the type has been written to '/Users/vishal/src/taskwarrior/target/debug/deps/taskchampion_lib-ed25a24956cb1cca.long-type-12491721833404153108.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error[E0277]: the trait bound `(i64,): IntoParams` is not satisfied
+   --> src/taskchampion-cpp/src/turso.rs:261:18
+    |
+261 | /                  self.conn.execute(
+262 | |                      "DELETE FROM working_set WHERE id = ?",
+263 | |                      (index as i64,)
+264 | |                  ).await.map_err(|e| taskchampion::Error::Database(e.to_string()))?;
+    | |__________________^ the trait `IntoParams` is not implemented for `(i64,)`
+    |
+    = help: the following other types implement trait `IntoParams`:
+              ((&str, A), (&str, B))
+              ((&str, A), (&str, B), (&str, C))
+              ((&str, A), (&str, B), (&str, C), (&str, D))
+              ((&str, A), (&str, B), (&str, C), (&str, D), (&str, E))
+              ((&str, A), (&str, B), (&str, C), (&str, D), (&str, E), (&str, F))
+              ((&str, A), (&str, B), (&str, C), (&str, D), (&str, E), (&str, F), (&str, G))
+              ((&str, A), (&str, B), (&str, C), (&str, D), (&str, E), (&str, F), (&str, G), (&str, H))
+              ((&str, A), (&str, B), (&str, C), (&str, D), ..., ..., ..., ..., ...)
+            and 23 others
+note: required by a bound in `Connection::execute`
+   --> /Users/vishal/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libsql-0.9.29/src/connection.rs:152:57
+    |
+152 |     pub async fn execute(&self, sql: &str, params: impl IntoParams) -> Result<u64> {
+    |                                                         ^^^^^^^^^^ required by this bound in `Connection::execute`
+    = note: the full name for the type has been written to '/Users/vishal/src/taskwarrior/target/debug/deps/taskchampion_lib-ed25a24956cb1cca.long-type-12491721833404153108.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error[E0277]: the trait bound `(i64,): IntoParams` is not satisfied
+   --> src/taskchampion-cpp/src/turso.rs:264:20
+    |
+264 |                  ).await.map_err(|e| taskchampion::Error::Database(e.to_string()))?;
+    |                    ^^^^^ the trait `IntoParams` is not implemented for `(i64,)`
+    |
+    = help: the following other types implement trait `IntoParams`:
+              ((&str, A), (&str, B))
+              ((&str, A), (&str, B), (&str, C))
+              ((&str, A), (&str, B), (&str, C), (&str, D))
+              ((&str, A), (&str, B), (&str, C), (&str, D), (&str, E))
+              ((&str, A), (&str, B), (&str, C), (&str, D), (&str, E), (&str, F))
+              ((&str, A), (&str, B), (&str, C), (&str, D), (&str, E), (&str, F), (&str, G))
+              ((&str, A), (&str, B), (&str, C), (&str, D), (&str, E), (&str, F), (&str, G), (&str, H))
+              ((&str, A), (&str, B), (&str, C), (&str, D), ..., ..., ..., ..., ...)
+            and 23 others
+note: required by a bound in `Connection::execute`
+   --> /Users/vishal/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libsql-0.9.29/src/connection.rs:152:57
+    |
+152 |     pub async fn execute(&self, sql: &str, params: impl IntoParams) -> Result<u64> {
+    |                                                         ^^^^^^^^^^ required by this bound in `Connection::execute`
+    = note: the full name for the type has been written to '/Users/vishal/src/taskwarrior/target/debug/deps/taskchampion_lib-ed25a24956cb1cca.long-type-12491721833404153108.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+
+error[E0277]: the trait bound `TursoConfig: serde::Deserialize<'de>` is not satisfied
+    --> src/taskchampion-cpp/src/lib.rs:526:38
+     |
+ 526 |     let config: turso::TursoConfig = serde_json::from_str(&config_json)
+     |                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ unsatisfied trait bound
+     |
+help: the trait `Deserialize<'_>` is not implemented for `TursoConfig`
+    --> src/taskchampion-cpp/src/turso.rs:11:1
+     |
+  11 | pub enum TursoConfig {
+     | ^^^^^^^^^^^^^^^^^^^^
+     = note: for local types consider adding `#[derive(serde::Deserialize)]` to your `TursoConfig` type
+     = note: for types from other crates check whether the crate offers a `serde` feature flag
+     = help: the following other types implement trait `Deserialize<'de>`:
+               `&'a Path` implements `Deserialize<'de>`
+               `&'a [u8]` implements `Deserialize<'de>`
+               `&'a str` implements `Deserialize<'de>`
+               `()` implements `Deserialize<'de>`
+               `(T,)` implements `Deserialize<'de>`
+               `(T0, T1)` implements `Deserialize<'de>`
+               `(T0, T1, T2)` implements `Deserialize<'de>`
+               `(T0, T1, T2, T3)` implements `Deserialize<'de>`
+             and 431 others
+note: required by a bound in `serde_json::from_str`
+    --> /Users/vishal/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_json-1.0.145/src/de.rs:2699:8
+     |
+2697 | pub fn from_str<'a, T>(s: &'a str) -> Result<T>
+     |        -------- required by a bound in this function
+2698 | where
+2699 |     T: de::Deserialize<'a>,
+     |        ^^^^^^^^^^^^^^^^^^^ required by this bound in `from_str`
+     = note: the full name for the type has been written to '/Users/vishal/src/taskwarrior/target/debug/deps/taskchampion_lib-ed25a24956cb1cca.long-type-17586584840044470139.txt'
+     = note: consider using `--verbose` to print the full type name to the console
+
+warning: unused variable: `uuid`
+   --> src/taskchampion-cpp/src/turso.rs:156:13
+    |
+156 |         let uuid = op.get_uuid(); // We need to check if Operation exposes uuid easily for valid ops.
+    |             ^^^^ help: if this is intentional, prefix it with an underscore: `_uuid`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+Some errors have detailed explanations: E0046, E0277, E0599.
+For more information about an error, try `rustc --explain E0046`.
+warning: `taskchampion-lib` (lib) generated 3 warnings
+error: could not compile `taskchampion-lib` (lib) due to 6 previous errors; 3 warnings emitted
