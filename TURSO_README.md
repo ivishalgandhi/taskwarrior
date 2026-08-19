@@ -57,12 +57,11 @@ sudo apt install cmake build-essential uuid-dev
 This fork is not in homebrew-core. Install from the personal tap (clone of Homebrew’s `task` formula, `HEAD` = `feature/turso-backend`):
 
 ```bash
-brew uninstall task          # if you have core Taskwarrior
 brew tap ivishalgandhi/tap
 brew install --HEAD ivishalgandhi/tap/task-turso
 ```
 
-The tap is private, so other machines need GitHub auth (`gh auth login` or `HOMEBREW_GITHUB_API_TOKEN`). The formula installs the `task` binary and conflicts with core `task` / `go-task`.
+The tap is private, so other machines need GitHub auth (`gh auth login` or `HOMEBREW_GITHUB_API_TOKEN`). The formula installs **`task-turso`**, so core Homebrew `task` can stay installed.
 
 ## Compilation
 
