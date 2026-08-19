@@ -8,7 +8,7 @@
         let token = std::env::var("TURSO_TOKEN")
             .expect("Set TURSO_TOKEN environment variable to run this test");
         
-        let config = TursoConfig::Remote { url, token };
+        let config = TursoConfig { url, token };
         let runtime = std::sync::Arc::new(tokio::runtime::Builder::new_multi_thread()
             .enable_all()
             .build()?);

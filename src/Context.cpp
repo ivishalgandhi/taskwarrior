@@ -42,6 +42,7 @@
 #include <shared.h>
 #include <stdlib.h>
 #include <taskchampion-cpp/lib.h>
+#include <turso.h>
 #include <unistd.h>
 
 #include <algorithm>
@@ -687,19 +688,9 @@ int Context::initialize(int argc, const char** argv) {
       std::string url = config.get("turso.url");
       std::string token = config.get("turso.token");
       std::string file = config.get("turso.file");
-
-      std::string config_json;
-      if (file != "") {
-        // Expand tilde in path
-        file = File(file)._data;
-        // EmbeddedReplica
-        config_json = "{\"EmbeddedReplica\":{\"path\":\"" + file + "\",\"url\":\"" + url +
-                      "\",\"token\":\"" + token + "\"}}";
-      } else {
-        // Remote
-        config_json = "{\"Remote\":{\"url\":\"" + url + "\",\"token\":\"" + token + "\"}}";
-      }
-      tdb2.open_replica_turso(config_json);
+      std::string turso_err = tursoRemoteOpenError(url, token, file);
+      if (turso_err != "") throw turso_err;
+      tdb2.open_replica_turso(url, token);
     } else {
       tdb2.open_replica(data_dir, create_if_missing, read_write);
     }

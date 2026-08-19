@@ -52,6 +52,18 @@ sudo apt install cmake build-essential uuid-dev
 
    Save these values - you'll need them for configuration.
 
+## Install (macOS Homebrew)
+
+This fork is not in homebrew-core. Install from the personal tap (clone of Homebrew’s `task` formula, `HEAD` = `feature/turso-backend`):
+
+```bash
+brew uninstall task          # if you have core Taskwarrior
+brew tap ivishalgandhi/tap
+brew install --HEAD ivishalgandhi/tap/task-turso
+```
+
+The tap is private, so other machines need GitHub auth (`gh auth login` or `HOMEBREW_GITHUB_API_TOKEN`). The formula installs the `task` binary and conflicts with core `task` / `go-task`.
+
 ## Compilation
 
 ### 1. Clone the Repository
@@ -89,7 +101,7 @@ turso.url=libsql://your-database-name.turso.io
 turso.token=your_turso_auth_token_here
 ```
 
-**Important**: Do NOT add `turso.file` - Remote mode doesn't use local files.
+**Important**: Do not set `turso.file`. Turso Remote only accepts `turso.url` and `turso.token`. If `turso.file` is present, Taskwarrior fails at open with an error telling you to remove it. Both `turso.url` and `turso.token` are required.
 
 ### Example Configuration
 ```ini
@@ -155,8 +167,9 @@ All operations immediately sync to Turso and are visible on other devices.
 ### Code Structure
 ```
 src/
-├── Context.cpp              # Checks for turso.url in config, initializes Turso storage
-├── TDB2_turso_snippet.cpp   # Calls Rust FFI to create Turso replica
+├── Context.cpp              # Validates Turso credentials, opens Turso or on-disk Replica
+├── turso.cpp / turso.h      # Turso Remote credential checks
+├── TDB2.cpp                 # open_replica_turso(url, token) → Rust FFI
 └── taskchampion-cpp/
     ├── Cargo.toml           # Rust dependencies (libsql, tokio, cxx)
     └── src/
@@ -166,8 +179,11 @@ src/
 
 ## Troubleshooting
 
-### "Task Database Error: No turso.url configured"
-**Solution**: Add `turso.url` and `turso.token` to `~/.taskrc`
+### "Turso Remote only: remove turso.file..."
+**Solution**: Delete `turso.file` from `~/.taskrc`. Only `turso.url` and `turso.token` are supported.
+
+### "Turso Remote requires turso.token..."
+**Solution**: Set `turso.token` whenever `turso.url` is set.
 
 ### Build fails with "cxx-build" error
 **Solution**: Ensure Rust is installed (`rustup --version`)

@@ -46,7 +46,7 @@ class TDB2 {
 
   void open_replica(const std::string&, bool create_if_missing, bool read_write);
   void open_replica_in_memory();
-  void open_replica_turso(const std::string&);
+  void open_replica_turso(const std::string& url, const std::string& token);
   void add(Task&);
   void modify(Task&);
   void purge(Task&);
