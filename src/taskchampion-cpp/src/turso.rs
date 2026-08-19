@@ -1,17 +1,15 @@
 use anyhow::{Context, Result};
 use libsql::Builder;
-use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use taskchampion::{
     storage::{Storage, StorageTxn},
     Operation, Uuid,
 };
 
-/// Storage configuration for Turso
-#[derive(Serialize, Deserialize)]
-pub enum TursoConfig {
-    /// Remote database (direct connection to Turso)
-    Remote { url: String, token: String },
+/// Storage configuration for Turso Remote.
+pub struct TursoConfig {
+    pub url: String,
+    pub token: String,
 }
 
 pub struct TursoStorage {
@@ -22,11 +20,7 @@ pub struct TursoStorage {
 
 impl TursoStorage {
     pub async fn new(config: TursoConfig, runtime: Arc<tokio::runtime::Runtime>) -> Result<Self> {
-        let db = match config {
-            TursoConfig::Remote { url, token } => {
-                Builder::new_remote(url, token).build().await?
-            }
-        };
+        let db = Builder::new_remote(config.url, config.token).build().await?;
 
         let conn = db.connect()?;
         
@@ -445,107 +439,6 @@ impl TursoTxn {
     where F: std::future::Future<Output = T> 
     {
         self.runtime.block_on(future)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use taskchampion::Uuid;
-
-    #[test]
-    fn test_storage_lifecycle() -> Result<()> {
-        let dir = tempfile::tempdir()?;
-        let db_path = dir.path().join("test.db");
-        let path_str = db_path.to_str().unwrap().to_string();
-        
-        let config = TursoConfig::Local { path: path_str };
-        
-        let rt = tokio::runtime::Runtime::new()?;
-        let mut storage = rt.block_on(TursoStorage::new(config))?;
-        
-        // Test 1: Empty check
-        {
-            let mut txn = storage.txn().unwrap();
-            assert!(txn.is_empty().unwrap());
-        }
-
-        // Test 2: Add Operation
-        let uuid = Uuid::new_v4();
-        let op = Operation::Create { uuid };
-        {
-            let mut txn = storage.txn().unwrap();
-            txn.add_operation(op.clone()).unwrap();
-            txn.commit().unwrap();
-        }
-        
-        // Test 3: Verify not empty
-        {
-            let mut txn = storage.txn().unwrap();
-            assert!(!txn.is_empty().unwrap());
-            assert_eq!(txn.num_unsynced_operations().unwrap(), 1);
-        }
-
-        // Test 4: Working Set
-        {
-            let mut txn = storage.txn().unwrap();
-            let idx = txn.add_to_working_set(uuid).unwrap();
-            assert_eq!(idx, 1);
-            let set = txn.get_working_set().unwrap();
-            assert_eq!(set.len(), 2); // 0 is None, 1 is uuid
-            assert_eq!(set[1], Some(uuid));
-        }
-
-        Ok(())
-    }
-
-    #[test]
-    fn test_task_crud() -> Result<()> {
-        let dir = tempfile::tempdir()?;
-        let db_path = dir.path().join("test_crud.db");
-        let path_str = db_path.to_str().unwrap().to_string();
-        
-        let config = TursoConfig::Local { path: path_str };
-        
-        let rt = tokio::runtime::Runtime::new()?;
-        let mut storage = rt.block_on(TursoStorage::new(config))?;
-
-        let uuid = Uuid::new_v4();
-        
-        // Create task
-        {
-            let mut txn = storage.txn().unwrap();
-            assert!(txn.create_task(uuid).unwrap());
-            assert!(!txn.create_task(uuid).unwrap()); // Already exists
-            txn.commit().unwrap();
-        }
-
-        // Set task data
-        {
-            let mut txn = storage.txn().unwrap();
-            let mut data = std::collections::HashMap::new();
-            data.insert("description".to_string(), "Verify Turso".to_string());
-            txn.set_task(uuid, data).unwrap();
-            txn.commit().unwrap();
-        }
-
-        // Get task
-        {
-            let mut txn = storage.txn().unwrap();
-            let task = txn.get_task(uuid).unwrap();
-            assert!(task.is_some());
-            assert_eq!(task.unwrap().get("description").map(|s| s.as_str()), Some("Verify Turso"));
-        }
-
-        // Delete task
-        {
-            let mut txn = storage.txn().unwrap();
-            assert!(txn.delete_task(uuid).unwrap());
-            assert!(txn.get_task(uuid).unwrap().is_none());
-            txn.commit().unwrap();
-        }
-
-        Ok(())
     }
 }
 

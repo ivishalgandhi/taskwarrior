@@ -23,8 +23,8 @@ mod ffi {
     extern "Rust" {
         /// Create a new replica stored in Turso.
         ///
-        /// `config_json` should be a JSON string matching `TursoConfig`.
-        fn new_replica_with_turso(config_json: String) -> Result<Box<Replica>>;
+        /// Open a Replica using Turso Remote (url + auth token).
+        fn new_replica_with_turso(url: String, token: String) -> Result<Box<Replica>>;
     }
 
     // --- Uuid
@@ -522,10 +522,9 @@ fn new_replica_in_memory() -> Result<Box<Replica>, CppError> {
     Ok(Box::new(tc::Replica::new(storage).into()))
 }
 
-fn new_replica_with_turso(config_json: String) -> Result<Box<Replica>, CppError> {
-    let config: turso::TursoConfig = serde_json::from_str(&config_json)
-        .map_err(|e| tc::Error::Database(format!("Invalid config: {}", e)))?;
-    
+fn new_replica_with_turso(url: String, token: String) -> Result<Box<Replica>, CppError> {
+    let config = turso::TursoConfig { url, token };
+
     // We need to block here because the C++ side expects a synchronous result return,
     // and we are creating the storage async.
     // However, creating the storage might involve network IO.
@@ -533,7 +532,7 @@ fn new_replica_with_turso(config_json: String) -> Result<Box<Replica>, CppError>
         .enable_all()
         .build()
         .map_err(|e| tc::Error::Database(format!("Failed to create runtime: {}", e)))?);
-        
+
     let storage = runtime.block_on(async {
         turso::TursoStorage::new(config, runtime.clone()).await
     }).map_err(|e| tc::Error::Database(e.to_string()))?;

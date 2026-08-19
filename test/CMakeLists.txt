@@ -21,6 +21,7 @@ set(test_SRCS
   tw_2689_test.cpp
   tdb2_test.cpp
   tc_cpp_test.cpp
+  turso_test.cpp
   util_test.cpp
   variant_add_test.cpp
   variant_and_test.cpp

@@ -27,6 +27,7 @@ add_library (task STATIC CLI2.cpp
                   recur.cpp
                   rules.cpp
                   sort.cpp
+                  turso.cpp
                   util.cpp)
 target_link_libraries(task taskchampion-cpp)
 
