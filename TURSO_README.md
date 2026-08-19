@@ -54,14 +54,14 @@ sudo apt install cmake build-essential uuid-dev
 
 ## Install (macOS Homebrew)
 
-This fork is not in homebrew-core. Install from the personal tap (clone of Homebrew’s `task` formula, `HEAD` = `feature/turso-backend`):
+Prebuilt `task-turso` (Apple Silicon). Core Homebrew `task` can stay installed. The tap is private, so other machines need GitHub auth (`gh auth login` or `HOMEBREW_GITHUB_API_TOKEN`).
 
 ```bash
 brew tap ivishalgandhi/tap
-brew install --HEAD ivishalgandhi/tap/task-turso
+brew install ivishalgandhi/tap/task-turso
 ```
 
-The tap is private, so other machines need GitHub auth (`gh auth login` or `HOMEBREW_GITHUB_API_TOKEN`). The formula installs **`task-turso`**, so core Homebrew `task` can stay installed.
+`--HEAD` still compiles from `feature/turso-backend` if you need a source build.
 
 ## Compilation
 
