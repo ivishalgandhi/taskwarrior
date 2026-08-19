@@ -31,21 +31,16 @@ endif()
 if(TASK_USE_CORROSION_SUBMODULE)
   set(FETCHCONTENT_SOURCE_DIR_CORROSION ${CMAKE_CURRENT_SOURCE_DIR}/corrosion)
 endif()
-if(SYSTEM_CORROSION)
-  # Make sure find_package is always used without FetchContent fallback
-  set(CMAKE_REQUIRE_FIND_PACKAGE_Corrosion ON)
-endif()
-
-FetchContent_Declare(Corrosion
-    GIT_REPOSITORY https://github.com/corrosion-rs/corrosion.git
-    GIT_TAG        ${TASK_CORROSION_VERSION}
-    FIND_PACKAGE_ARGS CONFIG
-)
-FetchContent_MakeAvailable(Corrosion)
 
 if(SYSTEM_CORROSION)
   find_package(Corrosion REQUIRED)
 else()
+  FetchContent_Declare(Corrosion
+      GIT_REPOSITORY https://github.com/corrosion-rs/corrosion.git
+      GIT_TAG        ${TASK_CORROSION_VERSION}
+      FIND_PACKAGE_ARGS CONFIG
+  )
+  FetchContent_MakeAvailable(Corrosion)
   add_subdirectory(${CMAKE_SOURCE_DIR}/src/taskchampion-cpp/corrosion)
 endif()
 
