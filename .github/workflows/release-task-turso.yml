@@ -1,0 +1,74 @@
+# Prebuilt task-turso binaries for the Homebrew tap (not --HEAD source builds).
+name: release-task-turso
+
+on:
+  push:
+    tags:
+      - "turso-v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-14
+            artifact: task-turso-darwin-arm64
+          - os: ubuntu-24.04
+            artifact: task-turso-linux-amd64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: recursive
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Linux build deps
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y cmake uuid-dev ninja-build
+
+      - name: Install macOS build deps
+        if: runner.os == 'macOS'
+        run: brew install cmake ninja
+
+      - name: Build task
+        env:
+          AWS_LC_SYS_NO_JITTER_ENTROPY: "1"
+        run: |
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DTASK_USE_CORROSION_SUBMODULE=ON
+          cmake --build build --target task_executable
+          strip build/src/task || true
+          cp build/src/task "${{ matrix.artifact }}"
+          chmod +x "${{ matrix.artifact }}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.artifact }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          version="${tag#turso-v}"
+          mkdir -p named
+          mv dist/task-turso-darwin-arm64 "named/task-turso-${version}-darwin-arm64"
+          mv dist/task-turso-linux-amd64 "named/task-turso-${version}-linux-amd64"
+          gh release create "$tag" named/* \
+            --repo "${{ github.repository }}" \
+            --title "$tag" \
+            --notes "Prebuilt task-turso ${version} from ${{ github.sha }}. Install: brew install ivishalgandhi/tap/task-turso"
